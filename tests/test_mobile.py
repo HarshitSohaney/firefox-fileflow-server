@@ -33,3 +33,11 @@ async def test_mobile_page_has_label_trigger(client):
     body = resp.text
     assert 'for="fileInput"' in body
     assert '<label class="btn"' in body
+
+
+@pytest.mark.anyio
+async def test_mobile_page_has_success_view(client):
+    resp = await client.get("/some-uuid")
+    body = resp.text
+    assert "kit-jump-hole-1.png" in body
+    assert "Your files are on the way" in body
