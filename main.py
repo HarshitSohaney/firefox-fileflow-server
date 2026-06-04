@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi.responses import Response
 import time
 
 app = FastAPI()
@@ -46,3 +47,16 @@ async def upload_file(file_id: str, file: UploadFile):
     )
 
     return {"status": "ok"}
+
+
+@app.get("/file/{file_id}")
+async def get_file(file_id: str):
+    entry = file_store.pop(file_id, None)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return Response(
+        content=entry.data,
+        media_type=entry.content_type,
+        headers={"Content-Disposition": f'attachment; filename="{entry.filename}"'},
+    )
