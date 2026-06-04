@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from fastapi import FastAPI, UploadFile, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import HTMLResponse, Response
 import time
+from templates import upload_page_html
 
 app = FastAPI()
 
@@ -60,3 +61,8 @@ async def get_file(file_id: str):
         media_type=entry.content_type,
         headers={"Content-Disposition": f'attachment; filename="{entry.filename}"'},
     )
+
+
+@app.get("/{file_id}")
+async def mobile_page(file_id: str):
+    return HTMLResponse(content=upload_page_html(file_id))
