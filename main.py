@@ -1,10 +1,20 @@
+import asyncio
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, Response
 import time
 from templates import upload_page_html
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app):
+    task = asyncio.create_task(cleanup_loop())
+    yield
+    task.cancel()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @dataclass
@@ -61,6 +71,24 @@ async def get_file(file_id: str):
         media_type=entry.content_type,
         headers={"Content-Disposition": f'attachment; filename="{entry.filename}"'},
     )
+
+
+TTL_SECONDS = 300  # 5 minutes
+CLEANUP_INTERVAL = 30  # seconds
+
+
+def cleanup_expired():
+    """Remove file entries older than TTL_SECONDS."""
+    now = time.time()
+    expired = [fid for fid, entry in file_store.items() if now - entry.created_at > TTL_SECONDS]
+    for fid in expired:
+        del file_store[fid]
+
+
+async def cleanup_loop():
+    while True:
+        await asyncio.sleep(CLEANUP_INTERVAL)
+        cleanup_expired()
 
 
 @app.get("/{file_id}")
