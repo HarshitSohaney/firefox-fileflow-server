@@ -21,6 +21,11 @@ def upload_page_html(file_id: str) -> str:
             max-width: 400px;
             width: 100%;
         }}
+        .logo {{
+            width: 120px;
+            height: auto;
+            margin-bottom: 16px;
+        }}
         h1 {{
             font-size: 1.4rem;
             margin-bottom: 24px;
@@ -60,6 +65,7 @@ def upload_page_html(file_id: str) -> str:
 </head>
 <body>
     <div class="container">
+        <img src="/images/kit-tail-folder-bookmarks.png" alt="FileFlow" class="logo">
         <h1>Send a photo to Firefox</h1>
         <label class="btn" for="fileInput">
             Tap to select a photo

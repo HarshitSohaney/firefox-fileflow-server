@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, Response
+from fastapi.staticfiles import StaticFiles
 import logging
 import time
 
@@ -18,6 +19,7 @@ async def lifespan(app):
 
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 
 @dataclass
