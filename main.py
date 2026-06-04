@@ -91,6 +91,11 @@ async def cleanup_loop():
         cleanup_expired()
 
 
+@app.get("/ping")
+async def ping():
+    return {"status": "pong"}
+
+
 @app.get("/{file_id}")
 async def mobile_page(file_id: str):
     return HTMLResponse(content=upload_page_html(file_id))
