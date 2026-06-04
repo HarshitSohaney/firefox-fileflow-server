@@ -3,7 +3,10 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, Response
+import logging
 import time
+
+logger = logging.getLogger("fileflow")
 from templates import upload_page_html
 
 
@@ -57,6 +60,7 @@ async def upload_file(file_id: str, file: UploadFile):
         created_at=time.time(),
     )
 
+    logger.info("Upload: %s (%s, %d bytes)", file_id, file.filename, len(data))
     return {"status": "ok"}
 
 
@@ -66,6 +70,7 @@ async def get_file(file_id: str):
     if entry is None:
         raise HTTPException(status_code=404, detail="File not found")
 
+    logger.info("Fetch: %s (%s, %d bytes) — deleted from store", file_id, entry.filename, len(entry.data))
     return Response(
         content=entry.data,
         media_type=entry.content_type,
@@ -83,6 +88,8 @@ def cleanup_expired():
     expired = [fid for fid, entry in file_store.items() if now - entry.created_at > TTL_SECONDS]
     for fid in expired:
         del file_store[fid]
+    if expired:
+        logger.info("Cleanup: removed %d expired entries (%s)", len(expired), ", ".join(expired))
 
 
 async def cleanup_loop():
