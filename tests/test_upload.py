@@ -75,3 +75,16 @@ async def test_upload_too_large(client):
         files={"file": ("big.jpg", big_data, "image/jpeg")},
     )
     assert resp.status_code == 413
+
+
+@pytest.mark.anyio
+async def test_upload_png_success(client):
+    from main import file_store
+
+    png_data = b"\x89PNG\r\n\x1a\n"
+    resp = await client.post(
+        "/upload/png-uuid",
+        files={"file": ("photo.png", png_data, "image/png")},
+    )
+    assert resp.status_code == 200
+    assert "png-uuid" in file_store

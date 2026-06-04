@@ -45,8 +45,8 @@ async def upload_file(file_id: str, file: UploadFile):
     if file_id in file_store:
         raise HTTPException(status_code=409, detail="File already uploaded for this ID")
 
-    if file.content_type != "image/jpeg":
-        raise HTTPException(status_code=400, detail="Only JPEG files are accepted")
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Only image files are accepted")
 
     data = await file.read()
 
@@ -56,7 +56,7 @@ async def upload_file(file_id: str, file: UploadFile):
     file_store[file_id] = FileEntry(
         data=data,
         content_type=file.content_type,
-        filename=file.filename or "upload.jpg",
+        filename=file.filename or "upload",
         created_at=time.time(),
     )
 

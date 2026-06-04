@@ -22,7 +22,7 @@ async def test_mobile_page_returns_html(client):
     assert resp.status_code == 200
     assert "text/html" in resp.headers["content-type"]
     body = resp.text
-    assert 'accept="image/jpeg"' in body
+    assert 'accept="image/*"' in body
     assert "abc-123-uuid" in body
     assert "/upload/abc-123-uuid" in body
 
