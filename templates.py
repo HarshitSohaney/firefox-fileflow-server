@@ -64,7 +64,7 @@ def upload_page_html(file_id: str) -> str:
         <label class="btn" for="fileInput">
             Tap to select a photo
         </label>
-        <input type="file" id="fileInput" accept="image/jpeg" class="hidden">
+        <input type="file" id="fileInput" accept="image/jpeg" capture="environment" class="hidden">
         <progress id="progressBar" class="progress hidden" value="0" max="100"></progress>
         <div id="status" class="status"></div>
     </div>
