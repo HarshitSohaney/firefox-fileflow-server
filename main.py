@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, HTTPException
 import time
 
 app = FastAPI()
@@ -20,3 +20,29 @@ file_store: dict[str, FileEntry] = {}
 async def get_status(file_id: str):
     ready = file_id in file_store
     return {"ready": ready}
+
+
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+
+
+@app.post("/upload/{file_id}")
+async def upload_file(file_id: str, file: UploadFile):
+    if file_id in file_store:
+        raise HTTPException(status_code=409, detail="File already uploaded for this ID")
+
+    if file.content_type != "image/jpeg":
+        raise HTTPException(status_code=400, detail="Only JPEG files are accepted")
+
+    data = await file.read()
+
+    if len(data) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large. Max 10 MB.")
+
+    file_store[file_id] = FileEntry(
+        data=data,
+        content_type=file.content_type,
+        filename=file.filename or "upload.jpg",
+        created_at=time.time(),
+    )
+
+    return {"status": "ok"}
