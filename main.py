@@ -96,6 +96,23 @@ async def ping():
     return {"status": "pong"}
 
 
+@app.get("/debug/store")
+async def debug_store():
+    now = time.time()
+    return {
+        "count": len(file_store),
+        "entries": [
+            {
+                "id": fid,
+                "filename": entry.filename,
+                "size_bytes": len(entry.data),
+                "age_seconds": round(now - entry.created_at),
+            }
+            for fid, entry in file_store.items()
+        ],
+    }
+
+
 @app.get("/{file_id}")
 async def mobile_page(file_id: str):
     return HTMLResponse(content=upload_page_html(file_id))
