@@ -28,16 +28,19 @@ def upload_page_html(file_id: str) -> str:
         }}
         .btn {{
             display: inline-block;
-            padding: 16px 32px;
-            font-size: 1.1rem;
+            padding: 20px 48px;
+            font-size: 1.2rem;
+            font-weight: 600;
             background: #0060df;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            min-height: 48px;
+            min-height: 56px;
+            width: 100%;
         }}
         .btn:active {{ background: #003eaa; }}
+        label.btn {{ display: flex; justify-content: center; align-items: center; }}
         .status {{
             margin-top: 24px;
             font-size: 1rem;
@@ -58,23 +61,19 @@ def upload_page_html(file_id: str) -> str:
 <body>
     <div class="container">
         <h1>Send a photo to Firefox</h1>
-        <input type="file" id="fileInput" accept="image/jpeg" class="hidden">
-        <button class="btn" id="selectBtn" onclick="fileInput.click()">
+        <label class="btn" for="fileInput">
             Tap to select a photo
-        </button>
+        </label>
+        <input type="file" id="fileInput" accept="image/jpeg" class="hidden">
         <progress id="progressBar" class="progress hidden" value="0" max="100"></progress>
         <div id="status" class="status"></div>
     </div>
     <script>
         const fileInput = document.getElementById("fileInput");
-        const selectBtn = document.getElementById("selectBtn");
+        const selectLabel = document.querySelector("label.btn");
         const progressBar = document.getElementById("progressBar");
         const statusEl = document.getElementById("status");
         const uploadUrl = "/upload/{file_id}";
-
-        document.addEventListener("DOMContentLoaded", function() {{
-            fileInput.click();
-        }});
 
         fileInput.addEventListener("change", function() {{
             if (!fileInput.files.length) return;
@@ -82,7 +81,7 @@ def upload_page_html(file_id: str) -> str:
         }});
 
         function upload(file) {{
-            selectBtn.classList.add("hidden");
+            selectLabel.classList.add("hidden");
             progressBar.classList.remove("hidden");
             statusEl.textContent = "Uploading...";
             statusEl.className = "status";

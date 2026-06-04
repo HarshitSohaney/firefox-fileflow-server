@@ -28,7 +28,8 @@ async def test_mobile_page_returns_html(client):
 
 
 @pytest.mark.anyio
-async def test_mobile_page_auto_opens_picker(client):
+async def test_mobile_page_has_label_trigger(client):
     resp = await client.get("/some-uuid")
     body = resp.text
-    assert "fileInput.click()" in body
+    assert 'for="fileInput"' in body
+    assert '<label class="btn"' in body
